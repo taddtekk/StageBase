@@ -32,11 +32,18 @@ const eslintConfig = [
     }
   },
   {
-    files: ["**/*.config.js", "apps/web/next.config.js"],
+    files: ["*.js", "scripts/**/*.js", "**/*.config.js", "apps/web/next.config.js"],
     languageOptions: {
       globals: {
-        module: "readonly"
+        __dirname: "readonly",
+        console: "readonly",
+        module: "readonly",
+        process: "readonly",
+        require: "readonly"
       }
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off"
     }
   },
   {

@@ -55,7 +55,7 @@ pnpm typecheck
 pnpm test
 ```
 
-`pnpm start` ist fuer den Next.js Standalone Build vorbereitet und startet nach `pnpm build` die Node.js-Serverdatei aus `.next/standalone`.
+`pnpm start` startet nach `pnpm build` die Plesk-kompatible Startdatei `App.js`.
 
 ## Prisma-Befehle
 
@@ -85,6 +85,18 @@ Die produktive Datenbank wird ueber Plesk MySQL/MariaDB bereitgestellt. Prisma v
 ## GitHub + Plesk Deployment
 
 Das Repository ist fuer ein privates GitHub Repository und Plesk Git Deployment vorbereitet.
+
+Empfohlene Plesk-Einstellungen fuer `stagebase.taddtekk.de`:
+
+```text
+Node.js Version: 20.20.2
+Application Mode: production
+Application Root: /stagebase.taddtekk.de
+Document Root: /stagebase.taddtekk.de/apps/web/public
+Application Startup File: App.js
+```
+
+Von den genannten Node.js-Versionen ist `20.20.2` fuer StageBase die passendere Wahl. `21.7.3` ist keine LTS-Linie und wird fuer den produktiven Betrieb nicht empfohlen.
 
 Vorgesehener Ablauf:
 

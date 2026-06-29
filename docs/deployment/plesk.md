@@ -23,15 +23,21 @@ Es soll kein automatisches Produktiv-Deployment ohne manuelle Kontrolle eingeric
 
 In der Domain oder Subdomain die Node.js Extension aktivieren.
 
-Empfohlene Einstellungen nach dem Build:
+Empfohlene Einstellungen fuer `stagebase.taddtekk.de`:
 
 ```text
-Application Root: /httpdocs
-Document Root: /httpdocs/apps/web/public
-Application Startup File: apps/web/.next/standalone/apps/web/server.js
+Node.js Version: 20.20.2
+Application Mode: production
+Application Root: /stagebase.taddtekk.de
+Document Root: /stagebase.taddtekk.de/apps/web/public
+Application Startup File: App.js
 ```
 
-Je nach Plesk-Pfad kann `Application Root` auf das Repository-Wurzelverzeichnis zeigen. Wichtig ist, dass die Startup File relativ zur Application Root erreichbar ist.
+Von den verfuegbaren Versionen `20.20.2` und `21.7.3` soll `20.20.2` genutzt werden. Die Version `21.7.3` ist keine LTS-Linie und wird fuer den produktiven Betrieb nicht empfohlen.
+
+Der Dokumentenstamm liegt bewusst in einem Unterverzeichnis des Anwendungsstamms. Dadurch zeigt Plesk nicht direkt auf das Repository-Wurzelverzeichnis.
+
+Die Datei `App.js` liegt im Repository-Wurzelverzeichnis und startet nach dem Build die produktive Next.js-App aus `apps/web/.next`.
 
 ## Umgebungsvariablen
 
@@ -56,7 +62,7 @@ pnpm db:generate
 pnpm build
 ```
 
-Der Next.js Build nutzt `output: "standalone"`. Dadurch wird eine Node.js-Startdatei fuer den produktiven Betrieb erzeugt.
+Der Next.js Build nutzt `output: "standalone"`. Dadurch wird zusaetzlich ein Standalone-Output erzeugt. Die Plesk-Startdatei bleibt bewusst `App.js`, weil Plesk haeufig eine Startdatei im Anwendungsstamm erwartet. Nach dem Build kopiert `postbuild` die benoetigten `public`- und `_next/static`-Assets in den Standalone-Ordner.
 
 ## Prisma Migrationen
 

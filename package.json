@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "pnpm --filter @stagebase/web dev",
     "build": "pnpm --filter @stagebase/web build",
-    "start": "node apps/web/.next/standalone/apps/web/server.js",
+    "start": "node App.js",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "pnpm --filter @stagebase/web typecheck && pnpm --filter @stagebase/database typecheck && tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
@@ -14,6 +14,9 @@
     "db:migrate": "pnpm --filter @stagebase/database db:migrate",
     "db:deploy": "pnpm --filter @stagebase/database db:deploy",
     "db:studio": "pnpm --filter @stagebase/database db:studio"
+  },
+  "engines": {
+    "node": ">=20.20.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
