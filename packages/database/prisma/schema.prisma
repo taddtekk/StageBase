@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ResourceType {
+  EMPLOYEE
+  ASSET
+  VEHICLE
+  CASE
+  CONSUMABLE
+  ROOM
+}
+
+enum ResourceBookingStatus {
+  DRAFT
+  REQUESTED
+  RESERVED
+  CONFIRMED
+  DECLINED
+  CANCELLED
+  PACKED
+  CHECKED_OUT
+  RETURNED
+  DAMAGED
+  MISSING
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  STATUS_CHANGE
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users                User[]
+  auditLogs            AuditLog[]
+  resources            Resource[]
+  resourceRequirements ResourceRequirement[]
+  resourceBookings     ResourceBooking[]
+
+  @@map("organizations")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  organizationId String
+  email          String
+  name           String
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  auditLogs    AuditLog[]
+  bookings     ResourceBooking[] @relation("ResourceBookingRequestedBy")
+
+  @@unique([organizationId, email])
+  @@index([organizationId])
+  @@map("users")
+}
+
+model AuditLog {
+  id             String      @id @default(cuid())
+  organizationId String
+  actorUserId    String?
+  action         AuditAction
+  entityType     String
+  entityId       String
+  summary        String
+  createdAt      DateTime    @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User?        @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, entityType, entityId])
+  @@index([actorUserId])
+  @@map("audit_logs")
+}
+
+model Resource {
+  id             String       @id @default(cuid())
+  organizationId String
+  type           ResourceType
+  name           String
+  code           String?
+  description    String?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  requirements ResourceRequirement[]
+  bookings     ResourceBooking[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, type])
+  @@map("resources")
+}
+
+model ResourceRequirement {
+  id             String       @id @default(cuid())
+  organizationId String
+  resourceId     String?
+  type           ResourceType
+  title          String
+  quantity       Int          @default(1)
+  startsAt       DateTime?
+  endsAt         DateTime?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  resource     Resource?         @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+  bookings     ResourceBooking[]
+
+  @@index([organizationId, type])
+  @@index([resourceId])
+  @@map("resource_requirements")
+}
+
+model ResourceBooking {
+  id             String                @id @default(cuid())
+  organizationId String
+  resourceId     String
+  requirementId  String?
+  requestedById  String?
+  status         ResourceBookingStatus @default(DRAFT)
+  startsAt       DateTime
+  endsAt         DateTime
+  quantity       Int                   @default(1)
+  notes          String?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  organization Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  resource     Resource             @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+  requirement  ResourceRequirement? @relation(fields: [requirementId], references: [id], onDelete: SetNull)
+  requestedBy  User?                @relation("ResourceBookingRequestedBy", fields: [requestedById], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status])
+  @@index([resourceId, startsAt, endsAt])
+  @@index([requirementId])
+  @@index([requestedById])
+  @@map("resource_bookings")
+}

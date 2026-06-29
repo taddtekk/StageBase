@@ -1,0 +1,28 @@
+{
+  "name": "stagebase",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.7.0",
+  "scripts": {
+    "dev": "pnpm --filter @stagebase/web dev",
+    "build": "pnpm --filter @stagebase/web build",
+    "start": "node apps/web/.next/standalone/apps/web/server.js",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "pnpm --filter @stagebase/web typecheck && pnpm --filter @stagebase/database typecheck && tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "db:generate": "pnpm --filter @stagebase/database db:generate",
+    "db:migrate": "pnpm --filter @stagebase/database db:migrate",
+    "db:deploy": "pnpm --filter @stagebase/database db:deploy",
+    "db:studio": "pnpm --filter @stagebase/database db:studio"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@eslint/eslintrc": "^3.3.1",
+    "eslint": "^9.32.0",
+    "eslint-config-next": "^15.5.19",
+    "@types/node": "^22.13.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0",
+    "vitest": "^3.2.4"
+  }
+}
